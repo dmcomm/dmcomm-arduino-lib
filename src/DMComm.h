@@ -40,4 +40,6 @@ int8_t val2hex(int8_t value);
 
 } /* namespace DMComm */
 
+#include "dmcomm_pin_control.h"
+
 #endif /* DMCOMM_H_ */
