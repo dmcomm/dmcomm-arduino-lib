@@ -1,6 +1,5 @@
 /* This file is part of the DMComm project by BladeSabre. License: MIT. */
 
-#include <Arduino.h>
 #include "DMComm.h"
 
 namespace DMComm {

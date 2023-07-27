@@ -1,7 +1,9 @@
-/* This file is part of the DMComm project by BladeSabre. License: MIT. */
+// This file is part of the DMComm project by BladeSabre. License: MIT.
 
 #ifndef DMCOMM_H_
 #define DMCOMM_H_
+
+#include <Arduino.h>
 
 #define DMCOMM_NO_PIN 0xFF
 #define DMCOMM_TICK_MICROS 200
@@ -9,6 +11,7 @@
 #define DMCOMM_SERIAL_TIMEOUT_MILLIS 6000
 #define DMCOMM_GOFIRST_REPEAT_MILLIS 5000
 #define DMCOMM_INACTIVE_DELAY_MILLIS 3000
+#define DMCOMM_TIMED_OUT 0xFFFFFFFF
 
 namespace DMComm {
 
@@ -16,7 +19,7 @@ namespace DMComm {
  * The signal type for communicating with the toy.
  * V for 2-prong, X for 3-prong, Y for Xros Mini.
  */
-enum SignalType {SIGNAL_TYPE_V = 0, SIGNAL_TYPE_X = 1, SIGNAL_TYPE_Y = 2};
+enum SignalType {kSignalTypeV = 0, kSignalTypeX = 1, kSignalTypeY = 2};
 
 /**
  * Call pinMode unless pin is DMCOMM_NO_PIN.
@@ -38,8 +41,10 @@ int8_t hex2val(int8_t hexdigit);
  */
 int8_t val2hex(int8_t value);
 
-} /* namespace DMComm */
+}  // namespace DMComm
 
 #include "dmcomm_pin_control.h"
+#include "dmcomm_base_communicator.h"
+#include "dmcomm_classic_communicator.h"
 
-#endif /* DMCOMM_H_ */
+#endif  // DMCOMM_H_

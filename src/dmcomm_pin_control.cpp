@@ -1,6 +1,5 @@
 // This file is part of the DMComm project by BladeSabre. License: MIT.
 
-#include <Arduino.h>
 #include "DMComm.h"
 
 namespace DMComm {
@@ -32,7 +31,7 @@ void DComOutput::driveActive() {
     digitalWriteMaybe(pin_notOE_, LOW);
 }
 
-void DComOutput::driveInactive() {
+void DComOutput::driveIdle() {
     digitalWriteMaybe(pin_out_, idle_level_);
     digitalWriteMaybe(pin_notOE_, LOW);
 }
@@ -45,6 +44,27 @@ void DComOutput::release() {
 void BaseProngInput::setActiveLevel(uint8_t level) {
     active_level_ = level;
     idle_level_ = level == HIGH ? LOW : HIGH;
+}
+
+uint32_t BaseProngInput::waitForActive(uint32_t timeout) {
+    return waitFor(true, timeout);
+}
+uint32_t BaseProngInput::waitForIdle(uint32_t timeout) {
+    return waitFor(false, timeout);
+}
+
+uint32_t BaseProngInput::waitFor(bool active, uint32_t timeout) {
+    uint32_t start_time = micros();
+    uint32_t duration;
+    while (true) {
+        duration = micros() - start_time;
+        if (duration > timeout) {
+            return DMCOMM_TIMED_OUT;
+        }
+        if (active == isActive()) {
+            return duration;
+        }
+    }
 }
 
 AnalogProngInput::AnalogProngInput(uint8_t pin_in, uint16_t board_voltage_mV, uint8_t read_resolution) :
