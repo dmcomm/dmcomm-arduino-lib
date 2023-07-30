@@ -19,7 +19,7 @@ private:
     SignalType signal_type_;
     uint16_t initial_timeout_ms_;
     bool initial_receive_;
-    ReceiveOutcome waitFrom(bool active, uint32_t dur_min, uint32_t dur_max, int16_t reached_bit);
+    ReceiveOutcome waitFrom(bool active, uint32_t dur_min, uint32_t dur_max, int16_t current_bit);
 };
 
 }  // namespace DMComm

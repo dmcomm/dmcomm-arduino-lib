@@ -141,10 +141,10 @@ ReceiveOutcome ClassicCommunicator::receive(uint16_t buffer[], uint16_t buffer_s
     return outcome;
 }
 
-ReceiveOutcome ClassicCommunicator::waitFrom(bool active, uint32_t dur_min, uint32_t dur_max, int16_t reached_bit) {
+ReceiveOutcome ClassicCommunicator::waitFrom(bool active, uint32_t dur_min, uint32_t dur_max, int16_t current_bit) {
     ReceiveOutcome outcome = {};
-    outcome.reached_bit = reached_bit;
-    outcome.reached_active = active;
+    outcome.current_bit = current_bit;
+    outcome.current_bit_active = active;
     outcome.last_duration = input_->waitFor(!active, dur_max);
     if (outcome.last_duration == DMCOMM_TIMED_OUT) {
         outcome.status = kErrorTimeout;

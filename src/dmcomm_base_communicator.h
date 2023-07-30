@@ -7,16 +7,6 @@
 
 namespace DMComm {
 
-enum ReceiveStatus {kStatusReceived, kStatusNothing, kErrorBufferFull, kErrorTooShort, kErrorTimeout};
-
-struct ReceiveOutcome {
-    ReceiveStatus status = kStatusNothing;
-    uint16_t result_length = 0;
-    uint32_t last_duration = 0;
-    int16_t reached_bit = 0;
-    bool reached_active = false;
-};
-
 class BaseCommunicator {
 public:
     virtual void prepare(SignalType signal_type, uint16_t timeout_ms) = 0;
