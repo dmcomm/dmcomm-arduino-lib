@@ -7,6 +7,7 @@ namespace DMComm {
 
 class BaseProngOutput {
 public:
+    virtual ~BaseProngOutput() {}
     virtual void begin() = 0;
     virtual void end() = 0;
     virtual void driveActive() = 0;
@@ -34,6 +35,7 @@ private:
 
 class BaseProngInput {
 public:
+    virtual ~BaseProngInput() {}
     virtual void begin() = 0;
     virtual void end() = 0;
     virtual bool isActive() = 0;

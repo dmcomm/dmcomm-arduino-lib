@@ -9,12 +9,10 @@ namespace DMComm {
 
 class Controller {
 public:
-    Controller(uint16_t buffer[], uint16_t buffer_size);
-    void connect(ClassicCommunicator& classic_comm);
+    void add(ClassicCommunicator& classic_comm);
     void execute(BaseDigiROM& digirom, uint16_t listen_timeout_ms=DMCOMM_LISTEN_TIMEOUT_MILLIS);
 private:
-    uint16_t * buffer_;
-    const uint16_t buffer_size_;
+    uint16_t buffer_[DMCOMM_SIGNAL_BUFFER_SIZE];
     ClassicCommunicator * classic_comm_ = nullptr;
     BaseCommunicator * current_comm_;
     BaseDigiROM * current_digirom_;

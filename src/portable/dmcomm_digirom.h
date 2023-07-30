@@ -19,6 +19,7 @@ void printReceiveOutcome(Print& dest, ReceiveOutcome outcome);
 
 class BaseDigiROM {
 public:
+    virtual ~BaseDigiROM() {}
     virtual SignalType signal_type() = 0;
     virtual uint8_t turn() = 0;
     virtual void prepare() = 0;

@@ -4,10 +4,7 @@
 
 namespace DMComm {
 
-Controller::Controller(uint16_t buffer[], uint16_t buffer_size) :
-    buffer_(buffer), buffer_size_(buffer_size) {}
-
-void Controller::connect(ClassicCommunicator& classic_comm) {
+void Controller::add(ClassicCommunicator& classic_comm) {
     classic_comm_ = &classic_comm;
 }
 
@@ -53,7 +50,7 @@ void Controller::execute(BaseDigiROM& digirom, uint16_t listen_timeout_ms) {
 }
 
 bool Controller::send() {
-    int16_t length = current_digirom_->send(buffer_, buffer_size_);
+    int16_t length = current_digirom_->send(buffer_, DMCOMM_SIGNAL_BUFFER_SIZE);
     if (length <= 0) {
         return false;
     }
@@ -62,7 +59,7 @@ bool Controller::send() {
 }
 
 bool Controller::receive() {
-    ReceiveOutcome outcome = current_comm_->receive(buffer_, buffer_size_);
+    ReceiveOutcome outcome = current_comm_->receive(buffer_, DMCOMM_SIGNAL_BUFFER_SIZE);
     current_digirom_->receive(buffer_, outcome);
     return outcome.status == kStatusReceived;
 }

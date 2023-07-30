@@ -9,6 +9,7 @@ namespace DMComm {
 
 class BaseCommunicator {
 public:
+    virtual ~BaseCommunicator() {}
     virtual void prepare(SignalType signal_type, uint16_t timeout_ms) = 0;
     virtual void send(uint16_t data[], uint16_t length) = 0;
     virtual ReceiveOutcome receive(uint16_t buffer[], uint16_t buffer_size) = 0;
