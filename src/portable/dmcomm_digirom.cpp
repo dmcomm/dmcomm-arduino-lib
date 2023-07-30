@@ -134,7 +134,12 @@ void ClassicCore::result_append(ClassicResultSegment item) {
 }
 
 
-ClassicDigiROM::ClassicDigiROM(const char * digirom) : digirom_(digirom) {}
+ClassicDigiROM::ClassicDigiROM(const char * digirom) : digirom_(digirom) {
+    DigiROMType rom_type = digiROMType(digirom_);
+    signal_type_ = rom_type.signal_type;
+    turn_ = rom_type.turn;
+    data_start_ = rom_type.data_start;
+}
 
 SignalType ClassicDigiROM::signal_type() {
     return signal_type_;
@@ -145,38 +150,55 @@ uint8_t ClassicDigiROM::turn() {
 }
 
 void ClassicDigiROM::prepare() {
-    //TODO
-    signal_type_ = kSignalTypeX;
-    turn_ = 2;
-    cursor_ = 0;
     core_.prepare();
+    cursor_ = digirom_ + data_start_;
 }
 
-uint16_t ClassicDigiROM::send(uint16_t buffer[], uint16_t buffer_size) {
-    //TODO stub function
-    uint16_t bits;
+int16_t ClassicDigiROM::send(uint16_t buffer[], uint16_t buffer_size) {
+    uint16_t bits = 0;
+    uint16_t copy_mask = 0;
+    uint16_t invert_mask = 0;
+    int8_t checksum_target = -1;
+    uint8_t check_digit_LSB_pos = 12;
     if (buffer_size < 1) {
+        return -2;
+    }
+    if (*cursor_ == '\0' || *cursor_==' ') {
         return 0;
     }
-    switch(cursor_) {
-    case 0:
-        bits = core_.send(0x0069);
-        break;
-    case 1:
-        bits = core_.send(0x2169);
-        break;
-    case 2:
-        bits = core_.send(0x8009);
-        break;
-    case 3:
-        bits = core_.send(0x0009, 0x0C00, 0x03F0, 4);  // for turn 2
-        //bits = core_.send(0x9009);  // for turn 1
-        break;
-    default:
-        return 0;
+    // Require first character to be dash
+    if (*cursor_ != '-') {
+        return -1;
     }
-    buffer[0] = bits;
     cursor_ ++;
+    for (int8_t i = 0; i < 4; i ++) {
+        uint8_t LSB_pos = 12 - (i * 4);
+        bits <<= 4;
+        char ch1 = *cursor_;
+        char ch_digit = ch1;
+        if (ch1 == '@' || ch1 == '^') {
+            cursor_ ++;
+            ch_digit = *cursor_;
+            if (ch_digit == '\0') {
+                cursor_ --;
+            }
+        }
+        int8_t digit = hex2val(ch_digit);
+        if (digit < 0) {
+            return -1;
+        }
+        if (ch1 == '@') {
+            checksum_target = digit;
+            check_digit_LSB_pos = LSB_pos;
+        } else if (ch1 == '^') {
+            copy_mask |= (~digit & 0xF) << LSB_pos;
+            invert_mask |= digit << LSB_pos;
+        } else {
+            bits |= digit;
+        }
+        cursor_ ++;
+    }
+    buffer[0] = core_.send(bits, copy_mask, invert_mask, checksum_target, check_digit_LSB_pos);
     return 1;
 }
 

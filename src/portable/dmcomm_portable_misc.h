@@ -11,7 +11,7 @@ namespace DMComm {
  * The signal type for communicating with the toy.
  * V for 2-prong, X for 3-prong, Y for Xros Mini.
  */
-enum SignalType {kSignalTypeV = 0, kSignalTypeX = 1, kSignalTypeY = 2};
+enum SignalType {kSignalTypeV = 0, kSignalTypeX = 1, kSignalTypeY = 2, kSignalTypeError};
 
 enum ReceiveStatus {kStatusReceived, kStatusNothing, kErrorBufferFull, kErrorTooShort, kErrorTimeout};
 
@@ -29,6 +29,14 @@ struct ClassicResultSegment {
     ResultSegmentType type;
     uint16_t data;
 };
+
+struct DigiROMType {
+    SignalType signal_type;
+    uint8_t turn;
+    uint8_t data_start;
+};
+
+DigiROMType digiROMType(const char * digirom);
 
 /**
  * Return integer value of hex digit character, or -1 if not a hex digit.

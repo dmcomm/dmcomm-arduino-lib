@@ -19,8 +19,11 @@ void Controller::execute(BaseDigiROM& digirom, uint16_t listen_timeout_ms) {
     case kSignalTypeY:
         current_comm_ = classic_comm_;
         break;
+    default:
+        break;
     }
     if (current_comm_ == nullptr) {
+        // Either default above or relevant comm was not assigned.
         return; //TODO should we have some return values?
     }
     current_digirom_ = &digirom;
@@ -50,8 +53,8 @@ void Controller::execute(BaseDigiROM& digirom, uint16_t listen_timeout_ms) {
 }
 
 bool Controller::send() {
-    uint16_t length = current_digirom_->send(buffer_, buffer_size_);
-    if (length == 0) {
+    int16_t length = current_digirom_->send(buffer_, buffer_size_);
+    if (length <= 0) {
         return false;
     }
     current_comm_->send(buffer_, length);

@@ -22,7 +22,7 @@ public:
     virtual SignalType signal_type() = 0;
     virtual uint8_t turn() = 0;
     virtual void prepare() = 0;
-    virtual uint16_t send(uint16_t buffer[], uint16_t buffer_size) = 0;
+    virtual int16_t send(uint16_t buffer[], uint16_t buffer_size) = 0;
     virtual void receive(uint16_t data[], ReceiveOutcome outcome) = 0;
     virtual void printResult(Print& dest) = 0;
 };
@@ -51,7 +51,7 @@ public:
     SignalType signal_type();
     uint8_t turn();
     void prepare();
-    uint16_t send(uint16_t buffer[], uint16_t buffer_size);
+    int16_t send(uint16_t buffer[], uint16_t buffer_size);
     void receive(uint16_t data[], ReceiveOutcome outcome);
     void printResult(Print& dest);
 private:
@@ -59,7 +59,8 @@ private:
     ClassicCore core_;
     SignalType signal_type_;
     uint8_t turn_;
-    uint16_t cursor_;
+    uint8_t data_start_;
+    const char * cursor_;
 };
 
 }  // namespace DMComm

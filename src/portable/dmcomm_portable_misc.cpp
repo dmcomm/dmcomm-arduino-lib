@@ -4,6 +4,47 @@
 
 namespace DMComm {
 
+DigiROMType digiROMType(const char * digirom) {
+    uint8_t chunk_len = 0;
+    while (digirom[chunk_len] != '\0' && digirom[chunk_len] != '-' && chunk_len < 4) {
+        chunk_len ++;
+    }
+    char op1 = '_';
+    char op2 = '_';
+    char turn_ch = '_';
+    switch(chunk_len) {
+    case 1:
+        op1 = digirom[0];
+        break;
+    case 2:
+        op1 = digirom[0];
+        turn_ch = digirom[1];
+        break;
+    case 3:
+        op1 = digirom[0];
+        op2 = digirom[1];
+        turn_ch = digirom[2];
+        break;
+    }
+    bool has_turn = turn_ch >= '0' && turn_ch <= '2';
+    SignalType signal_type = kSignalTypeError;
+    if (op1 == 'V' && op2 == '_' && has_turn) {
+        signal_type = kSignalTypeV;
+    } else if (op1 == 'X' && op2 == '_' && has_turn) {
+        signal_type = kSignalTypeX;
+    } else if (op1 == 'Y' && op2 == '_' && has_turn) {
+        signal_type = kSignalTypeY;
+    }
+    uint8_t turn;
+    if (signal_type == kSignalTypeError) {
+        turn = 0;
+        chunk_len = 0;
+    } else {
+        turn = has_turn ? (turn_ch - '0') : 0;
+    }
+    return {signal_type, turn, chunk_len};
+}
+
 int8_t hex2val(int8_t hexdigit) {
     int8_t value;
     if (hexdigit >= '0' && hexdigit <= '9') {
