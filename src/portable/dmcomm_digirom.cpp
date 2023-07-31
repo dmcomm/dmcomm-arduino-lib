@@ -52,6 +52,36 @@ void printReceiveOutcome(Print& dest, ReceiveOutcome outcome) {
 }
 
 
+uint16_t BaseCore::length() {
+    return length_;
+}
+
+void BaseCore::printResult(Print& dest) {
+    for (uint16_t i = 0; i < length_; i ++) {
+        ResultSegmentType seg_type = result_types_[i];
+        if (seg_type == kNoData) {
+            dest.write('t');
+        } else {
+            if (seg_type == kDataSent) {
+                dest.write('s');
+            } else {
+                dest.write('r');
+            }
+            dest.write(':');
+            printResultSegmentData(dest, i);
+        }
+        dest.write(' ');
+    }
+    switch (last_outcome_.status) {
+    case kStatusReceived:
+    case kStatusNothing:
+        break;
+    default:
+        printReceiveOutcome(dest, last_outcome_);
+    }
+}
+
+
 void ClassicCore::prepare() {
     length_ = 0;
     checksum_ = 0;
@@ -62,7 +92,7 @@ uint16_t ClassicCore::send(uint16_t bits,
         int8_t checksum_target, uint8_t check_digit_LSB_pos) {
     uint16_t bits_received = 0;
     if (length_ > 0) {
-        bits_received = result_[length_ - 1].data;
+        bits_received = result_data_[length_ - 1];
     }
     bits &= ~copy_mask;
     bits |= copy_mask & bits_received;
@@ -80,57 +110,76 @@ uint16_t ClassicCore::send(uint16_t bits,
         bits |= check_digit << check_digit_LSB_pos;
         checksum_ = checksum_target;
     }
-    result_append({kDataSent, bits});
+    result_append(kDataSent, bits);
     return bits;
 }
 
 void ClassicCore::receive(uint16_t data[], ReceiveOutcome outcome) {
     last_outcome_ = outcome;
     if (outcome.status == kStatusReceived) {
-        result_append({kDataReceived, data[0]});
+        result_append(kDataReceived, data[0]);
     } else if (outcome.status == kStatusNothing) {
-        result_append({kNoData, 0});
+        result_append(kNoData, 0);
     }
 }
 
-uint16_t ClassicCore::length() {
-    return length_;
+void ClassicCore::printResultSegmentData(Print& dest, uint16_t index) {
+    printHex(dest, result_data_[index], 4);
 }
 
-ClassicResultSegment ClassicCore::result(uint16_t i) {
-    return result_[i];
-}
-
-void ClassicCore::printResult(Print& dest) {
-    for (uint16_t i = 0; i < length_; i ++) {
-        ResultSegmentType seg_type = result_[i].type;
-        if (seg_type == kNoData) {
-            dest.write('t');
-        } else {
-            if (seg_type == kDataSent) {
-                dest.write('s');
-            } else {
-                dest.write('r');
-            }
-            dest.write(':');
-            printHex(dest, result_[i].data, 4);
-        }
-        dest.write(' ');
-    }
-    switch (last_outcome_.status) {
-    case kStatusReceived:
-    case kStatusNothing:
-        break;
-    default:
-        printReceiveOutcome(dest, last_outcome_);
-    }
-}
-
-void ClassicCore::result_append(ClassicResultSegment item) {
+void ClassicCore::result_append(ResultSegmentType type, uint16_t data) {
     if (length_ < DMCOMM_CLASSIC_RESULT_SIZE) {
-        result_[length_] = item;
+        result_types_[length_] = type;
+        result_data_[length_] = data;
         length_ ++;
     }
+}
+
+
+void WordsCore::prepare() {
+    length_ = 0;
+}
+
+void WordsCore::send(uint16_t data[], uint16_t length) {
+    result_append(kDataSent, data, length);
+}
+
+void WordsCore::receive(uint16_t data[], ReceiveOutcome outcome) {
+    last_outcome_ = outcome;
+    if (outcome.status == kStatusReceived) {
+        result_append(kDataReceived, data, outcome.result_length);
+    } else if (outcome.status == kStatusNothing) {
+        result_append(kNoData, data, 0);
+    }
+}
+
+void WordsCore::printResultSegmentData(Print& dest, uint16_t index) {
+    for (uint16_t j = 0; j < result_segments_[index].length; j ++) {
+        printHex(dest, result_segments_[index].data[j], 4);
+    }
+}
+
+void WordsCore::result_append(ResultSegmentType type, uint16_t data[], uint16_t segment_length) {
+    if (segment_length > DMCOMM_WORDS_RESULT_SEGMENT_SIZE) {
+        segment_length = DMCOMM_WORDS_RESULT_SEGMENT_SIZE; //TODO ?
+    }
+    if (length_ < DMCOMM_WORDS_RESULT_SIZE) {
+        result_types_[length_] = type;
+        result_segments_[length_].length = segment_length;
+        for (uint16_t i = 0; i < segment_length; i ++) {
+            result_segments_[length_].data[i] = data[i];
+        }
+        length_ ++;
+    }
+}
+
+
+SignalType BaseTextDigiROM::signal_type() {
+    return signal_type_;
+}
+
+uint8_t BaseTextDigiROM::turn() {
+    return turn_;
 }
 
 
@@ -139,14 +188,6 @@ ClassicDigiROM::ClassicDigiROM(const char * digirom) : digirom_(digirom) {
     signal_type_ = rom_type.signal_type;
     turn_ = rom_type.turn;
     data_start_ = rom_type.data_start;
-}
-
-SignalType ClassicDigiROM::signal_type() {
-    return signal_type_;
-}
-
-uint8_t ClassicDigiROM::turn() {
-    return turn_;
 }
 
 void ClassicDigiROM::prepare() {
@@ -209,5 +250,66 @@ void ClassicDigiROM::receive(uint16_t data[], ReceiveOutcome outcome) {
 void ClassicDigiROM::printResult(Print& dest) {
     core_.printResult(dest);
 }
+
+
+WordsDigiROM::WordsDigiROM(const char * digirom) : digirom_(digirom) {
+    DigiROMType rom_type = digiROMType(digirom_);
+    signal_type_ = rom_type.signal_type;
+    turn_ = rom_type.turn;
+    data_start_ = rom_type.data_start;
+}
+
+void WordsDigiROM::prepare() {
+    core_.prepare();
+    cursor_ = digirom_ + data_start_;
+}
+
+int16_t WordsDigiROM::send(uint16_t buffer[], uint16_t buffer_size) {
+    uint8_t length = 0;
+    if (*cursor_ == '\0' || *cursor_==' ') {
+        return 0;
+    }
+    // Require first character to be dash
+    if (*cursor_ != '-') {
+        return -1;
+    }
+    cursor_ ++;
+    int8_t digit_count = 0;
+    uint16_t bits = 0;
+    while (true) {
+        int8_t digit = hex2val(*cursor_);
+        if (digit == -1) {
+            if (digit_count == 0) {
+                core_.send(buffer, length);
+                return length;
+            } else {
+                return -2;
+            }
+        }
+        bits <<= 4;
+        bits |= digit;
+        digit_count ++;
+        digit_count %= 4;
+        if (digit_count == 0) {
+            if (length < buffer_size) {
+                buffer[length] = bits;
+                length ++;
+                bits = 0;
+            } else {
+                return -3;
+            }
+        }
+        cursor_ ++;
+    }
+}
+
+void WordsDigiROM::receive(uint16_t data[], ReceiveOutcome outcome) {
+    core_.receive(data, outcome);
+}
+
+void WordsDigiROM::printResult(Print& dest) {
+    core_.printResult(dest);
+}
+
 
 }  // namespace DMComm
