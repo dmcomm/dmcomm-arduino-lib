@@ -87,36 +87,36 @@ ReceiveOutcome ClassicCommunicator::receive(uint16_t buffer[], uint16_t buffer_s
     uint32_t start_timeout = initial_receive_ ? initial_timeout_ms_ : DMCOMM_CONF(reply_timeout_ms);
     start_timeout *= 1000;
     if (initial_receive_) {
-        outcome = waitFrom(true, 0, start_timeout, -3);
+        outcome = input_->waitFrom(true, 0, start_timeout, -3);
         if (outcome.status == kErrorTimeout) {
             outcome.status = kStatusNothing;
             return outcome;
         }
         start_timeout -= outcome.last_duration;
     }
-    outcome = waitFrom(false, 0, start_timeout, -2);
+    outcome = input_->waitFrom(false, 0, start_timeout, -2);
     if (outcome.status == kErrorTimeout) {
         outcome.status = kStatusNothing;
         return outcome;
     }
     initial_receive_ = false;
-    outcome = waitFrom(true,
+    outcome = input_->waitFrom(true,
         1000L * DMCOMM_CONF(pre_active_min_ms),
         1000L * DMCOMM_CONF(pre_active_max_ms),
         -2);
     if (outcome.status != kStatusReceived) {
         return outcome;
     }
-    outcome = waitFrom(false, DMCOMM_CONF(start_idle_min), DMCOMM_CONF(start_idle_max), -1);
+    outcome = input_->waitFrom(false, DMCOMM_CONF(start_idle_min), DMCOMM_CONF(start_idle_max), -1);
     if (outcome.status != kStatusReceived) {
         return outcome;
     }
-    outcome = waitFrom(true, DMCOMM_CONF(start_active_min), DMCOMM_CONF(start_active_max), -1);
+    outcome = input_->waitFrom(true, DMCOMM_CONF(start_active_min), DMCOMM_CONF(start_active_max), -1);
     if (outcome.status != kStatusReceived) {
         return outcome;
     }
     for (int8_t i = 0; i < 16; i ++) {
-        outcome = waitFrom(false, DMCOMM_CONF(bit_idle_min), DMCOMM_CONF(bit_idle_max), i);
+        outcome = input_->waitFrom(false, DMCOMM_CONF(bit_idle_min), DMCOMM_CONF(bit_idle_max), i);
         if (outcome.status != kStatusReceived) {
             return outcome;
         }
@@ -124,7 +124,7 @@ ReceiveOutcome ClassicCommunicator::receive(uint16_t buffer[], uint16_t buffer_s
         if (outcome.last_duration > DMCOMM_CONF(bit_idle_threshold)) {
             bits |= 0x8000;
         }
-        outcome = waitFrom(true, DMCOMM_CONF(bit_active_min), DMCOMM_CONF(bit_active_max), i);
+        outcome = input_->waitFrom(true, DMCOMM_CONF(bit_active_min), DMCOMM_CONF(bit_active_max), i);
         if (outcome.status != kStatusReceived) {
             if (outcome.status == kErrorTimeout && signal_type_ == kSignalTypeX && i == 15) {
                 // iC bug, ignore
@@ -132,29 +132,12 @@ ReceiveOutcome ClassicCommunicator::receive(uint16_t buffer[], uint16_t buffer_s
                 return outcome;
             }
         }
-        if (DMCOMM_CONF(invert_bit_read)) {
-            bits ^= 0xFFFF;
-        }
+    }
+    if (DMCOMM_CONF(invert_bit_read)) {
+        bits ^= 0xFFFF;
     }
     buffer[0] = bits;
     outcome.result_length = 1;
-    return outcome;
-}
-
-ReceiveOutcome ClassicCommunicator::waitFrom(bool active, uint32_t dur_min, uint32_t dur_max, int16_t current_bit) {
-    ReceiveOutcome outcome = {};
-    outcome.current_bit = current_bit;
-    outcome.current_bit_active = active;
-    outcome.last_duration = input_->waitFor(!active, dur_max);
-    if (outcome.last_duration == DMCOMM_TIMED_OUT) {
-        outcome.status = kErrorTimeout;
-        return outcome;
-    }
-    if (outcome.last_duration < dur_min) {
-        outcome.status = kErrorTooShort;
-        return outcome;
-    }
-    outcome.status = kStatusReceived;
     return outcome;
 }
 

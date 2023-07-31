@@ -6,7 +6,7 @@
 #include <Arduino.h>
 
 #define DMCOMM_NO_PIN 0xFF
-#define DMCOMM_COMMAND_BUFFER_SIZE 64
+#define DMCOMM_COMMAND_BUFFER_SIZE 72
 #define DMCOMM_SIGNAL_BUFFER_SIZE 8
 #define DMCOMM_SERIAL_TIMEOUT_MILLIS 6000
 #define DMCOMM_GOFIRST_BEFORE_MILLIS 1000
@@ -33,6 +33,7 @@ void digitalWriteMaybe(uint8_t pin, uint8_t val);
 #include "dmcomm_pin_control.h"
 #include "dmcomm_base_communicator.h"
 #include "dmcomm_classic_communicator.h"
+#include "dmcomm_color_communicator.h"
 #include "dmcomm_controller.h"
 #include "dmcomm_serial.h"
 

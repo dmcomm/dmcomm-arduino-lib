@@ -67,6 +67,23 @@ uint32_t BaseProngInput::waitFor(bool active, uint32_t timeout) {
     }
 }
 
+ReceiveOutcome BaseProngInput::waitFrom(bool active, uint32_t dur_min, uint32_t dur_max, int16_t current_bit) {
+    ReceiveOutcome outcome = {};
+    outcome.current_bit = current_bit;
+    outcome.current_bit_active = active;
+    outcome.last_duration = waitFor(!active, dur_max);
+    if (outcome.last_duration == DMCOMM_TIMED_OUT) {
+        outcome.status = kErrorTimeout;
+        return outcome;
+    }
+    if (outcome.last_duration < dur_min) {
+        outcome.status = kErrorTooShort;
+        return outcome;
+    }
+    outcome.status = kStatusReceived;
+    return outcome;
+}
+
 AnalogProngInput::AnalogProngInput(uint8_t pin_in, uint16_t board_voltage_mV, uint8_t read_resolution) :
         pin_in_(pin_in), board_voltage_mV_(board_voltage_mV), read_resolution_(read_resolution) {
     setActiveLevel(LOW);

@@ -44,6 +44,7 @@ public:
     uint32_t waitForActive(uint32_t timeout);
     uint32_t waitForIdle(uint32_t timeout);
     uint32_t waitFor(bool active, uint32_t timeout);
+    ReceiveOutcome waitFrom(bool active, uint32_t dur_min, uint32_t dur_max, int16_t current_bit);
 protected:
     uint8_t idle_level_;
     uint8_t active_level_;

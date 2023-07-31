@@ -8,6 +8,10 @@ void Controller::add(ClassicCommunicator& classic_comm) {
     classic_comm_ = &classic_comm;
 }
 
+void Controller::add(ColorCommunicator& color_comm) {
+    color_comm_ = &color_comm;
+}
+
 void Controller::execute(BaseDigiROM& digirom, uint16_t listen_timeout_ms) {
     current_comm_ = nullptr;
     switch(digirom.signal_type()) {
@@ -15,6 +19,9 @@ void Controller::execute(BaseDigiROM& digirom, uint16_t listen_timeout_ms) {
     case kSignalTypeX:
     case kSignalTypeY:
         current_comm_ = classic_comm_;
+        break;
+    case kSignalTypeC:
+        current_comm_ = color_comm_;
         break;
     default:
         break;

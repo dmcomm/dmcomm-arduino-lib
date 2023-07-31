@@ -27,6 +27,9 @@ void SerialFollower::loop() {
             case kSignalTypeY:
                 digirom_ = new ClassicDigiROM(command_buffer_);
                 break;
+            case kSignalTypeC:
+                digirom_ = new WordsDigiROM(command_buffer_);
+                break;
             default:
                 break;
         }

@@ -9,14 +9,16 @@ using namespace DMComm;
 
 DComOutput output = DComOutput(A2, A1);
 AnalogProngInput input = AnalogProngInput(A3, 5000, 10);
-ClassicCommunicator comm = ClassicCommunicator(output, input);
+ClassicCommunicator classic_comm = ClassicCommunicator(output, input);
+ColorCommunicator color_comm = ColorCommunicator(output, input);
 
 Controller controller = Controller();
 SerialFollower serial_follower = SerialFollower(controller, Serial);
 
 void setup () {
     Serial.begin(9600);
-    controller.add(comm);
+    controller.add(classic_comm);
+    controller.add(color_comm);
 }
 
 void loop() {
