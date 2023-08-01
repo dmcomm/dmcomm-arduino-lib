@@ -79,7 +79,7 @@ uint8_t SerialFollower::serialRead() {
             command_buffer_[i] = incoming_byte;
             i += 1;
         }
-    } while (incoming_byte != '\r' && incoming_byte != '\n' && i < DMCOMM_COMMAND_BUFFER_SIZE - 1);
+    } while (incoming_byte != '\r' && incoming_byte != '\n' && i < DMCOMM_TEXT_DIGIROM_SIZE - 1);
     if (incoming_byte != '\r' && incoming_byte != '\n') {
         serial_.println(F("too long"));
         return 0;

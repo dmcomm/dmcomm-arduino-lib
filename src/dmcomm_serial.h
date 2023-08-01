@@ -15,7 +15,7 @@ public:
 private:
     Controller& controller_;
     Stream& serial_;
-    char command_buffer_[DMCOMM_COMMAND_BUFFER_SIZE];
+    char command_buffer_[DMCOMM_TEXT_DIGIROM_SIZE];
     BaseDigiROM * digirom_ = nullptr;
 
     /**

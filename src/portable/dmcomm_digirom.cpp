@@ -174,11 +174,17 @@ void WordsCore::result_append(ResultSegmentType type, uint16_t data[], uint16_t 
 }
 
 
-BaseTextDigiROM::BaseTextDigiROM(const char * digirom) : digirom_(digirom) {
+BaseTextDigiROM::BaseTextDigiROM(const char * digirom) {
     DigiROMType rom_type = digiROMType(digirom_);
     signal_type_ = rom_type.signal_type;
     turn_ = rom_type.turn;
     data_start_ = rom_type.data_start;
+    uint8_t i = 0;
+    while (digirom[i] != '\0' && i < DMCOMM_TEXT_DIGIROM_SIZE - 1) {
+        digirom_[i] = digirom[i];
+        i ++;
+    }
+    digirom_[i] = '\0';
 }
 
 SignalType BaseTextDigiROM::signal_type() {
