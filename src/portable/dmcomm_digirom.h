@@ -78,38 +78,37 @@ private:
 
 class BaseTextDigiROM : public BaseDigiROM {
 public:
+    BaseTextDigiROM(const char * digirom);
     SignalType signal_type();
     uint8_t turn();
 protected:
+    const char * digirom_;
     SignalType signal_type_;
     uint8_t turn_;
+    uint8_t data_start_;
 };
 
 class ClassicDigiROM : public BaseTextDigiROM {
 public:
-    ClassicDigiROM(const char * digirom);
+    using BaseTextDigiROM::BaseTextDigiROM;
     void prepare();
     int16_t send(uint16_t buffer[], uint16_t buffer_size);
     void receive(uint16_t data[], ReceiveOutcome outcome);
     void printResult(Print& dest);
 private:
-    const char * digirom_;
     ClassicCore core_;
-    uint8_t data_start_;
     const char * cursor_;
 };
 
 class WordsDigiROM : public BaseTextDigiROM {
 public:
-    WordsDigiROM(const char * digirom);
+    using BaseTextDigiROM::BaseTextDigiROM;
     void prepare();
     int16_t send(uint16_t buffer[], uint16_t buffer_size);
     void receive(uint16_t data[], ReceiveOutcome outcome);
     void printResult(Print& dest);
 private:
-    const char * digirom_;
     WordsCore core_;
-    uint8_t data_start_;
     const char * cursor_;
 };
 

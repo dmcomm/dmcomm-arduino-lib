@@ -174,6 +174,13 @@ void WordsCore::result_append(ResultSegmentType type, uint16_t data[], uint16_t 
 }
 
 
+BaseTextDigiROM::BaseTextDigiROM(const char * digirom) : digirom_(digirom) {
+    DigiROMType rom_type = digiROMType(digirom_);
+    signal_type_ = rom_type.signal_type;
+    turn_ = rom_type.turn;
+    data_start_ = rom_type.data_start;
+}
+
 SignalType BaseTextDigiROM::signal_type() {
     return signal_type_;
 }
@@ -182,13 +189,6 @@ uint8_t BaseTextDigiROM::turn() {
     return turn_;
 }
 
-
-ClassicDigiROM::ClassicDigiROM(const char * digirom) : digirom_(digirom) {
-    DigiROMType rom_type = digiROMType(digirom_);
-    signal_type_ = rom_type.signal_type;
-    turn_ = rom_type.turn;
-    data_start_ = rom_type.data_start;
-}
 
 void ClassicDigiROM::prepare() {
     core_.prepare();
@@ -251,13 +251,6 @@ void ClassicDigiROM::printResult(Print& dest) {
     core_.printResult(dest);
 }
 
-
-WordsDigiROM::WordsDigiROM(const char * digirom) : digirom_(digirom) {
-    DigiROMType rom_type = digiROMType(digirom_);
-    signal_type_ = rom_type.signal_type;
-    turn_ = rom_type.turn;
-    data_start_ = rom_type.data_start;
-}
 
 void WordsDigiROM::prepare() {
     core_.prepare();
