@@ -33,6 +33,8 @@ struct DigiROMType {
 
 DigiROMType digiROMType(const char * digirom);
 
+char toUpper(char ch);
+
 /**
  * Return integer value of hex digit character, or -1 if not a hex digit.
  */

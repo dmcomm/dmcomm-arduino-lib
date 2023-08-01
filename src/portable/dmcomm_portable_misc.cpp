@@ -28,6 +28,8 @@ DigiROMType digiROMType(const char * digirom) {
     }
     bool has_turn = turn_ch >= '0' && turn_ch <= '2';
     SignalType signal_type = kSignalTypeError;
+    op1 = toUpper(op1);
+    op2 = toUpper(op2);
     if (op1 == 'V' && op2 == '_' && has_turn) {
         signal_type = kSignalTypeV;
     } else if (op1 == 'X' && op2 == '_' && has_turn) {
@@ -45,6 +47,13 @@ DigiROMType digiROMType(const char * digirom) {
         turn = has_turn ? (turn_ch - '0') : 0;
     }
     return {signal_type, turn, chunk_len};
+}
+
+char toUpper(char ch) {
+    if (ch >= 'a' && ch <= 'z') {
+        return (ch - 0x20);
+    }
+    return ch;
 }
 
 int8_t hex2val(int8_t hexdigit) {
