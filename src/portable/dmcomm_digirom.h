@@ -5,6 +5,7 @@
 
 #include "dmcomm_printonly.h"
 
+#define DMCOMM_TEXT_DIGIROM_SIZE 72
 #define DMCOMM_CLASSIC_RESULT_SIZE 21
 #define DMCOMM_WORDS_RESULT_SIZE 5
 #define DMCOMM_WORDS_RESULT_SEGMENT_SIZE 8
@@ -82,7 +83,7 @@ public:
     SignalType signal_type();
     uint8_t turn();
 protected:
-    const char * digirom_;
+    char digirom_[DMCOMM_TEXT_DIGIROM_SIZE];
     SignalType signal_type_;
     uint8_t turn_;
     uint8_t data_start_;
