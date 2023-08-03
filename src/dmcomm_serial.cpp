@@ -70,7 +70,7 @@ uint8_t SerialFollower::serialRead() {
             incoming_int = serial_.read();
             time = millis() - time_start;
             if (time > DMCOMM_SERIAL_TIMEOUT_MILLIS) {
-                serial_.println(F("too late"));
+                serial_.println(F("[No EOL received]"));
                 return 0;
             }
         } while (incoming_int == -1);
@@ -81,7 +81,8 @@ uint8_t SerialFollower::serialRead() {
         }
     } while (incoming_byte != '\r' && incoming_byte != '\n' && i < DMCOMM_TEXT_DIGIROM_SIZE - 1);
     if (incoming_byte != '\r' && incoming_byte != '\n') {
-        serial_.println(F("too long"));
+        serial_.println(F("[DigiROM too long]"));
+        while (serial_.read() != -1);  // empty the buffer
         return 0;
     }
     command_buffer_[i] = '\0';

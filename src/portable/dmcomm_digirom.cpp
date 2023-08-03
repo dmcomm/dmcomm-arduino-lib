@@ -36,9 +36,9 @@ void printReceiveOutcome(Print& dest, ReceiveOutcome outcome) {
         dest.print(F("[Bit "));
         dest.print(outcome.current_bit);
         if (outcome.current_bit_active) {
-            dest.print(F("active "));
+            dest.print(F(" active "));
         } else {
-            dest.print(F("idle "));
+            dest.print(F(" idle "));
         }
         if (outcome.status == kErrorTooShort) {
             dest.print(F("too short "));
