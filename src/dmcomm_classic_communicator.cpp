@@ -133,8 +133,9 @@ ReceiveOutcome ClassicCommunicator::receive(uint16_t buffer[], uint16_t buffer_s
             if (outcome.status == kErrorTimeout && signal_type_ == kSignalTypeX && i == 15) {
                 // iC bug, ignore
                 outcome.status = kStatusReceived;
+            } else {
+                return outcome;
             }
-            return outcome;
         }
     }
     if (DMCOMM_CONF(invert_bit_read)) {
