@@ -3,6 +3,10 @@
 // Program for 5V AVR Arduino boards.
 // Aiming for same behaviour as non-library version of DMComm.
 
+#if defined(ARDUINO_ARCH_AVR) && !defined(USB_PID) && (SERIAL_RX_BUFFER_SIZE < 128)
+#error : require SERIAL_RX_BUFFER_SIZE=128
+#endif
+
 #include <DMComm.h>
 
 using namespace DMComm;
