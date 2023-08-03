@@ -12,18 +12,18 @@ static const uint16_t pre_idle_send[]      PROGMEM = {3000, 3000, 5000};
 static const uint16_t pre_active_min_ms[]  PROGMEM = {40, 40, 30};
 static const uint16_t pre_active_send_ms[] PROGMEM = {59, 60, 40};
 static const uint16_t pre_active_max_ms[]  PROGMEM = {80, 80, 50};
-static const uint16_t start_idle_min[]     PROGMEM = {1500, 1500, 9000};
+static const uint16_t start_idle_min[]     PROGMEM = {1400, 1500, 9000};
 static const uint16_t start_idle_send[]    PROGMEM = {2083, 2200, 11000};
 static const uint16_t start_idle_max[]     PROGMEM = {2500, 3500, 13000};
-static const uint16_t start_active_min[]   PROGMEM = {400, 1000, 4000};
+static const uint16_t start_active_min[]   PROGMEM = {300, 1000, 4000};
 static const uint16_t start_active_send[]  PROGMEM = {917, 1600, 6000};
 static const uint16_t start_active_max[]   PROGMEM = {1400, 2600, 8000};
-static const uint16_t bit_idle_min[]       PROGMEM = {500, 800, 1000};
+static const uint16_t bit_idle_min[]       PROGMEM = {400, 800, 800};
 static const uint16_t bit0_idle_send[]     PROGMEM = {1000, 1600, 4000};
 static const uint16_t bit_idle_threshold[] PROGMEM = {1800, 2600, 3000};
 static const uint16_t bit1_idle_send[]     PROGMEM = {2667, 4000, 1400};
 static const uint16_t bit_idle_max[]       PROGMEM = {3400, 5500, 4500};
-static const uint16_t bit_active_min[]     PROGMEM = {1000, 1200, 1200};
+static const uint16_t bit_active_min[]     PROGMEM = {800, 1000, 1000};
 static const uint16_t bit1_active_send[]   PROGMEM = {1667, 1600, 4400};
 static const uint16_t bit0_active_send[]   PROGMEM = {3167, 4000, 1600};
 static const uint16_t bit_active_max[]     PROGMEM = {4000, 5500, 5000};
@@ -105,6 +105,10 @@ ReceiveOutcome ClassicCommunicator::receive(uint16_t buffer[], uint16_t buffer_s
         1000L * DMCOMM_CONF(pre_active_max_ms),
         -2);
     if (outcome.status != kStatusReceived) {
+        if (outcome.status == kErrorTimeout && signal_type_ == kSignalTypeY) {
+            // Xros Mini disconnected on D-Com, ignore
+            outcome.status = kStatusNothing;
+        }
         return outcome;
     }
     outcome = input_->waitFrom(false, DMCOMM_CONF(start_idle_min), DMCOMM_CONF(start_idle_max), -1);
@@ -128,9 +132,9 @@ ReceiveOutcome ClassicCommunicator::receive(uint16_t buffer[], uint16_t buffer_s
         if (outcome.status != kStatusReceived) {
             if (outcome.status == kErrorTimeout && signal_type_ == kSignalTypeX && i == 15) {
                 // iC bug, ignore
-            } else {
-                return outcome;
+                outcome.status = kStatusReceived;
             }
+            return outcome;
         }
     }
     if (DMCOMM_CONF(invert_bit_read)) {
