@@ -59,7 +59,7 @@ uint32_t BaseProngInput::waitFor(bool active, uint32_t timeout) {
     while (true) {
         duration = micros() - start_time;
         if (duration > timeout) {
-            return DMCOMM_TIMED_OUT;
+            return DMCOMM_SIGNAL_TIMED_OUT;
         }
         if (active == isActive()) {
             return duration;
@@ -72,7 +72,7 @@ ReceiveOutcome BaseProngInput::waitFrom(bool active, uint32_t dur_min, uint32_t 
     outcome.current_bit = current_bit;
     outcome.current_bit_active = active;
     outcome.last_duration = waitFor(!active, dur_max);
-    if (outcome.last_duration == DMCOMM_TIMED_OUT) {
+    if (outcome.last_duration == DMCOMM_SIGNAL_TIMED_OUT) {
         outcome.status = kErrorTimeout;
         return outcome;
     }
