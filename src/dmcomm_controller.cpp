@@ -50,6 +50,7 @@ void Controller::execute(BaseDigiROM& digirom, uint16_t listen_timeout_ms) {
                 return;
             }
             if (!send()) {
+                delay(DMCOMM_AFTER_RECEIVE_MILLIS);
                 return;
             }
         }
