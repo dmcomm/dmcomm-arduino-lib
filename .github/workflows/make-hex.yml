@@ -41,6 +41,7 @@ jobs:
           - --build-property
           - compiler.cpp.extra_flags=-DSERIAL_RX_BUFFER_SIZE=128
         platforms: |
+          - name: "arduino:avr"
           - name: "MiniCore:avr"
             source-url: "https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json"
     - name: Copy hex
