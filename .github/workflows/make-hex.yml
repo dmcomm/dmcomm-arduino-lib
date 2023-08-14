@@ -40,7 +40,7 @@ jobs:
         name: ${{ matrix.label }}
         path: ${{ env.FILENAME }}
     - name: Attach to release
-      if: github.event_name == "release"
+      if: github.event_name == 'release'
       uses: softprops/action-gh-release@v1
       with:
         files: ${{ env.FILENAME }}
