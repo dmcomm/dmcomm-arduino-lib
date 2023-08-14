@@ -22,14 +22,23 @@ jobs:
         - label: "leonardo"
           fqbn: "arduino:avr:leonardo"
           build-dir: "arduino.avr.leonardo"
-        - label: "minicore328pb"
+        - label: "atmega328pb"
           fqbn: "MiniCore:avr:328:variant=modelPB"
           build-dir: "MiniCore.avr.328"
     steps:
-    - name: Set FILENAME
-      run: echo "FILENAME=dmcomm-arduino-lib-${{ matrix.label }}.hex" >> $GITHUB_ENV
     - name: checkout
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Set VERSION
+      run: echo "VERSION=$(git describe --tags --always)" >> $GITHUB_ENV
+    - name: Set HEX_FILENAME
+      run: echo "HEX_FILENAME=dmcomm-arduino-${{ env.VERSION }}-${{ matrix.label }}.hex" >> $GITHUB_ENV
+    - name: Write build info
+      run: >
+        echo '#define DMCOMM_BUILD_INFO
+        F("name = dmcomm-arduino\r\nversion = ${{ env.VERSION }}\r\nboard = ${{ matrix.label }}")'
+        > /src/dmcomm_build_info.h
     - name: Compile sketch
       uses: arduino/compile-sketches@v1
       with:
@@ -45,14 +54,14 @@ jobs:
           - name: "MiniCore:avr"
             source-url: "https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json"
     - name: Copy hex
-      run: cp examples/ClassicComUnit/build/${{ matrix.build-dir }}/ClassicComUnit.ino.hex ${{ env.FILENAME }}
+      run: cp examples/ClassicComUnit/build/${{ matrix.build-dir }}/ClassicComUnit.ino.hex ${{ env.HEX_FILENAME }}
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.label }}
-        path: ${{ env.FILENAME }}
+        path: ${{ env.HEX_FILENAME }}
     - name: Attach to release
       if: github.event_name == 'release'
       uses: softprops/action-gh-release@v1
       with:
-        files: ${{ env.FILENAME }}
+        files: ${{ env.HEX_FILENAME }}
