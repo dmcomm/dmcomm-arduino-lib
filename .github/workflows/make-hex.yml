@@ -1,0 +1,45 @@
+name: Compile Arduino files to hex
+
+on:
+  push:
+  pull_request:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+        - label: "nano"
+          fqbn: "arduino:avr:nano"
+          build-dir: "arduino.avr.nano"
+        - label: "leonardo"
+          fqbn: "arduino:avr:leonardo"
+          build-dir: "arduino.avr.leonardo"
+    steps:
+    - name: Set FILENAME
+      run: echo "FILENAME=dmcomm-arduino-lib-${{ matrix.label }}.hex" >> $GITHUB_ENV
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: Compile sketch
+      uses: arduino/compile-sketches@v1
+      with:
+        fqbn: "${{ matrix.fqbn }}"
+        sketch-paths: |
+          - examples/ClassicComUnit
+        cli-compile-flags: |
+          - --export-binaries
+          - --build-property compiler.cpp.extra_flags=-DSERIAL_RX_BUFFER_SIZE=128
+    - name: Copy hex
+      run: cp examples/ClassicComUnit/${{ matrix.build-dir }}/ClassicComUnit.ino.hex ${{ env.FILENAME }}
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.label }}
+        path: ${{ env.FILENAME }}
+    - name: Attach to release
+      if: github.event_name == "release"
+      uses: softprops/action-gh-release@v1
+      with:
+        files: ${{ env.FILENAME }}
