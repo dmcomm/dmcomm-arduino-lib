@@ -38,7 +38,7 @@ jobs:
       run: >
         echo '#define DMCOMM_BUILD_INFO
         F("name = dmcomm-arduino\r\nversion = ${{ env.VERSION }}\r\nboard = ${{ matrix.label }}")'
-        > /src/dmcomm_build_info.h
+        > src/dmcomm_build_info.h
     - name: Compile sketch
       uses: arduino/compile-sketches@v1
       with:
