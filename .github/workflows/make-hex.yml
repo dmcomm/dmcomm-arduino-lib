@@ -31,7 +31,7 @@ jobs:
           - examples/ClassicComUnit
         cli-compile-flags: |
           - --export-binaries
-          - --build-property compiler.cpp.extra_flags=-DSERIAL_RX_BUFFER_SIZE=128
+          - --build-property "compiler.cpp.extra_flags=-DSERIAL_RX_BUFFER_SIZE=128"
     - name: Copy hex
       run: cp examples/ClassicComUnit/${{ matrix.build-dir }}/ClassicComUnit.ino.hex ${{ env.FILENAME }}
     - name: Upload artifact
