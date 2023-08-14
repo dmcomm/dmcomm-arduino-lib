@@ -34,7 +34,7 @@ jobs:
           - --build-property
           - compiler.cpp.extra_flags=-DSERIAL_RX_BUFFER_SIZE=128
     - name: Copy hex
-      run: cp examples/ClassicComUnit/${{ matrix.build-dir }}/ClassicComUnit.ino.hex ${{ env.FILENAME }}
+      run: cp examples/ClassicComUnit/build/${{ matrix.build-dir }}/ClassicComUnit.ino.hex ${{ env.FILENAME }}
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
