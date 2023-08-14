@@ -12,12 +12,18 @@ jobs:
     strategy:
       matrix:
         include:
+        - label: "uno"
+          fqbn: "arduino:avr:uno"
+          build-dir: "arduino.avr.uno"
         - label: "nano"
           fqbn: "arduino:avr:nano"
           build-dir: "arduino.avr.nano"
         - label: "leonardo"
           fqbn: "arduino:avr:leonardo"
           build-dir: "arduino.avr.leonardo"
+        - label: "minicore328pb"
+          fqbn: "MiniCore:avr:328:variant=modelPB"
+          build-dir: "MiniCore.avr.328"
     steps:
     - name: Set FILENAME
       run: echo "FILENAME=dmcomm-arduino-lib-${{ matrix.label }}.hex" >> $GITHUB_ENV
@@ -33,6 +39,9 @@ jobs:
           - --export-binaries
           - --build-property
           - compiler.cpp.extra_flags=-DSERIAL_RX_BUFFER_SIZE=128
+        platforms:
+        - name: "MiniCore:avr"
+        - source-url: "https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json"
     - name: Copy hex
       run: cp examples/ClassicComUnit/build/${{ matrix.build-dir }}/ClassicComUnit.ino.hex ${{ env.FILENAME }}
     - name: Upload artifact
