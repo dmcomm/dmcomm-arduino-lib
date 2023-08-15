@@ -38,6 +38,8 @@ DigiROMType digiROMType(const char * digirom) {
         signal_type = kSignalTypeY;
     } else if (op1 == 'C' && op2 == '_' && has_turn) {
         signal_type = kSignalTypeC;
+    } else if (op1 == 'I' && op2 == '_' && !has_turn) {
+        signal_type = kSignalTypeInfo;
     }
     uint8_t turn;
     if (signal_type == kSignalTypeError) {

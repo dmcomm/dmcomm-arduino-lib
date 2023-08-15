@@ -29,6 +29,10 @@ void digitalWriteMaybe(uint8_t pin, uint8_t val);
 
 }  // namespace DMComm
 
+#ifndef DMCOMM_BUILD_INFO
+#include "dmcomm_build_info.h"
+#endif
+
 #include "portable/dmcomm_printonly.h"
 #include "dmcomm_pin_control.h"
 #include "dmcomm_base_communicator.h"

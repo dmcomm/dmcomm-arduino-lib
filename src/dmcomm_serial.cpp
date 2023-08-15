@@ -14,12 +14,14 @@ SerialFollower::~SerialFollower() {
 void SerialFollower::loop() {
     uint8_t i = serialRead();
     if (i > 0) {
-        serial_.print(F("got "));
-        serial_.print(i, DEC);
-        serial_.print(F(" bytes: "));
-        serial_.write(command_buffer_, i);
-        serial_.print(F(" -> "));
         DigiROMType rom_type = digiROMType(command_buffer_);
+        if (rom_type.signal_type != kSignalTypeInfo) {
+            serial_.print(F("got "));
+            serial_.print(i, DEC);
+            serial_.print(F(" bytes: "));
+            serial_.write(command_buffer_, i);
+            serial_.print(F(" -> "));
+        }
         delete_digirom();
         switch(rom_type.signal_type) {
             case kSignalTypeV:
@@ -33,7 +35,9 @@ void SerialFollower::loop() {
             default:
                 break;
         }
-        if (digirom_ != nullptr) {
+        if (rom_type.signal_type == kSignalTypeInfo) {
+            serial_.print(DMCOMM_BUILD_INFO);
+        } else if (digirom_ != nullptr) {
             serial_.print(F("(new DigiROM)"));
         } else {
             serial_.print(F("(paused)"));
