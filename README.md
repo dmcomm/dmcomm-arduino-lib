@@ -2,13 +2,14 @@
 
 Arduino program and library to communicate with Digimon toys, by BladeSabre ( bladethecoder@gmail.com ). License: MIT.
 
-Currently supports A-Com and D-Com; the 3 classic prong styles with all calculation features; and Digimon Color without calculation.
+Currently supports A-Com and D-Com; the 3 classic prong styles with all calculation features; and Digimon Color without calculation. LED feedback and the voltage test are not yet supported.
 
 Loosely based on `dmcomm-python`, but avoiding dynamic allocation (except in SerialFollower).
 
 ## Installing library
 * Clone the repo into your [Arduino libraries directory](https://docs.arduino.cc/software/ide-v1/tutorials/installing-libraries#manual-installation)
 * OR Use the "Download ZIP" option on GitHub with `Sketch > Include Library > Add .ZIP Library`
+  * If updating, you will need to delete the previous version first
 * Open the ClassicComUnit example
 
 ## Hardware setup
