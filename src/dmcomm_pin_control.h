@@ -52,7 +52,7 @@ protected:
 
 class AnalogProngInput : public BaseProngInput {
 public:
-    AnalogProngInput(uint8_t pin_in, uint16_t board_voltage_mV, uint8_t read_resolution);
+    AnalogProngInput(uint8_t pin_in, uint16_t reference_voltage_mV, uint8_t read_resolution);
     ~AnalogProngInput();
     void begin();
     void end();
@@ -61,7 +61,7 @@ public:
     uint16_t voltage();
 private:
     uint8_t pin_in_;
-    uint16_t board_voltage_mV_;
+    uint16_t reference_voltage_mV_;
     uint8_t read_resolution_;
     uint16_t threshold_mV_;
     uint16_t threshold_units_;

@@ -84,10 +84,10 @@ ReceiveOutcome BaseProngInput::waitFrom(bool active, uint32_t dur_min, uint32_t 
     return outcome;
 }
 
-AnalogProngInput::AnalogProngInput(uint8_t pin_in, uint16_t board_voltage_mV, uint8_t read_resolution) :
-        pin_in_(pin_in), board_voltage_mV_(board_voltage_mV), read_resolution_(read_resolution) {
+AnalogProngInput::AnalogProngInput(uint8_t pin_in, uint16_t reference_voltage_mV, uint8_t read_resolution) :
+        pin_in_(pin_in), reference_voltage_mV_(reference_voltage_mV), read_resolution_(read_resolution) {
     setActiveLevel(LOW);
-    setThreshold(board_voltage_mV / 2);
+    setThreshold(reference_voltage_mV / 2);
 }
 
 AnalogProngInput::~AnalogProngInput() {
@@ -103,7 +103,7 @@ void AnalogProngInput::end() {}
 void AnalogProngInput::setThreshold(uint16_t threshold_mV) {
     uint32_t max_input = (1 << read_resolution_) - 1;
     threshold_mV_ = threshold_mV;
-    threshold_units_ = (uint16_t) (max_input * threshold_mV / board_voltage_mV_);
+    threshold_units_ = (uint16_t) (max_input * threshold_mV / reference_voltage_mV_);
 }
 
 bool AnalogProngInput::isActive() {
@@ -114,7 +114,7 @@ bool AnalogProngInput::isActive() {
 uint16_t AnalogProngInput::voltage() {
     uint32_t max_input = (1 << read_resolution_) - 1;
     uint32_t read = analogRead(pin_in_);
-    return (uint16_t) (read * board_voltage_mV_ / max_input);
+    return (uint16_t) (read * reference_voltage_mV_ / max_input);
 }
 
 }  // namespace DMComm
