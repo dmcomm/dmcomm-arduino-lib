@@ -87,7 +87,7 @@ void ClassicCore::prepare() {
     checksum_ = 0;
 }
 
-uint16_t ClassicCore::send(uint16_t bits,
+uint16_t ClassicCore::next(uint16_t bits,
         uint16_t copy_mask, uint16_t invert_mask,
         int8_t checksum_target, uint8_t check_digit_LSB_pos) {
     uint16_t bits_received = 0;
@@ -114,7 +114,7 @@ uint16_t ClassicCore::send(uint16_t bits,
     return bits;
 }
 
-void ClassicCore::receive(uint16_t data[], ReceiveOutcome outcome) {
+void ClassicCore::store(uint16_t data[], ReceiveOutcome outcome) {
     last_outcome_ = outcome;
     if (outcome.status == kStatusReceived) {
         result_append(kDataReceived, data[0]);
@@ -140,11 +140,11 @@ void WordsCore::prepare() {
     length_ = 0;
 }
 
-void WordsCore::send(uint16_t data[], uint16_t length) {
+void WordsCore::next(uint16_t data[], uint16_t length) {
     result_append(kDataSent, data, length);
 }
 
-void WordsCore::receive(uint16_t data[], ReceiveOutcome outcome) {
+void WordsCore::store(uint16_t data[], ReceiveOutcome outcome) {
     last_outcome_ = outcome;
     if (outcome.status == kStatusReceived) {
         result_append(kDataReceived, data, outcome.result_length);
@@ -201,7 +201,7 @@ void ClassicDigiROM::prepare() {
     cursor_ = digirom_ + data_start_;
 }
 
-int16_t ClassicDigiROM::send(uint16_t buffer[], uint16_t buffer_size) {
+int16_t ClassicDigiROM::next(uint16_t buffer[], uint16_t buffer_size) {
     uint16_t bits = 0;
     uint16_t copy_mask = 0;
     uint16_t invert_mask = 0;
@@ -245,12 +245,12 @@ int16_t ClassicDigiROM::send(uint16_t buffer[], uint16_t buffer_size) {
         }
         cursor_ ++;
     }
-    buffer[0] = core_.send(bits, copy_mask, invert_mask, checksum_target, check_digit_LSB_pos);
+    buffer[0] = core_.next(bits, copy_mask, invert_mask, checksum_target, check_digit_LSB_pos);
     return 1;
 }
 
-void ClassicDigiROM::receive(uint16_t data[], ReceiveOutcome outcome) {
-    core_.receive(data, outcome);
+void ClassicDigiROM::store(uint16_t data[], ReceiveOutcome outcome) {
+    core_.store(data, outcome);
 }
 
 void ClassicDigiROM::printResult(Print& dest) {
@@ -263,7 +263,7 @@ void WordsDigiROM::prepare() {
     cursor_ = digirom_ + data_start_;
 }
 
-int16_t WordsDigiROM::send(uint16_t buffer[], uint16_t buffer_size) {
+int16_t WordsDigiROM::next(uint16_t buffer[], uint16_t buffer_size) {
     uint8_t length = 0;
     if (*cursor_ == '\0' || *cursor_==' ') {
         return 0;
@@ -279,7 +279,7 @@ int16_t WordsDigiROM::send(uint16_t buffer[], uint16_t buffer_size) {
         int8_t digit = hex2val(*cursor_);
         if (digit == -1) {
             if (digit_count == 0) {
-                core_.send(buffer, length);
+                core_.next(buffer, length);
                 return length;
             } else {
                 return -2;
@@ -302,8 +302,8 @@ int16_t WordsDigiROM::send(uint16_t buffer[], uint16_t buffer_size) {
     }
 }
 
-void WordsDigiROM::receive(uint16_t data[], ReceiveOutcome outcome) {
-    core_.receive(data, outcome);
+void WordsDigiROM::store(uint16_t data[], ReceiveOutcome outcome) {
+    core_.store(data, outcome);
 }
 
 void WordsDigiROM::printResult(Print& dest) {

@@ -58,7 +58,7 @@ void Controller::execute(BaseDigiROM& digirom, uint16_t listen_timeout_ms) {
 }
 
 bool Controller::send() {
-    int16_t length = current_digirom_->send(buffer_, DMCOMM_SIGNAL_BUFFER_SIZE);
+    int16_t length = current_digirom_->next(buffer_, DMCOMM_SIGNAL_BUFFER_SIZE);
     if (length <= 0) {
         return false;
     }
@@ -68,7 +68,7 @@ bool Controller::send() {
 
 bool Controller::receive() {
     ReceiveOutcome outcome = current_comm_->receive(buffer_, DMCOMM_SIGNAL_BUFFER_SIZE);
-    current_digirom_->receive(buffer_, outcome);
+    current_digirom_->store(buffer_, outcome);
     return outcome.status == kStatusReceived;
 }
 

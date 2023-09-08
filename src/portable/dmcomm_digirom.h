@@ -26,8 +26,8 @@ public:
     virtual SignalType signal_type() = 0;
     virtual uint8_t turn() = 0;
     virtual void prepare() = 0;
-    virtual int16_t send(uint16_t buffer[], uint16_t buffer_size) = 0;
-    virtual void receive(uint16_t data[], ReceiveOutcome outcome) = 0;
+    virtual int16_t next(uint16_t buffer[], uint16_t buffer_size) = 0;
+    virtual void store(uint16_t data[], ReceiveOutcome outcome) = 0;
     virtual void printResult(Print& dest) = 0;
 };
 
@@ -46,10 +46,10 @@ protected:
 class ClassicCore : public BaseCore {
 public:
     void prepare();
-    uint16_t send(uint16_t bits,
+    uint16_t next(uint16_t bits,
         uint16_t copy_mask=0, uint16_t invert_mask=0,
         int8_t checksum_target=-1, uint8_t check_digit_LSB_pos=12);
-    void receive(uint16_t data[], ReceiveOutcome outcome);
+    void store(uint16_t data[], ReceiveOutcome outcome);
     //ClassicResultSegment result(uint16_t i);
 protected:
     void printResultSegmentData(Print& dest, uint16_t index);
@@ -67,8 +67,8 @@ struct WordsResultSegment {
 class WordsCore : public BaseCore {
 public:
     void prepare();
-    void send(uint16_t data[], uint16_t length);
-    void receive(uint16_t data[], ReceiveOutcome outcome);
+    void next(uint16_t data[], uint16_t length);
+    void store(uint16_t data[], ReceiveOutcome outcome);
     //result?
 protected:
     void printResultSegmentData(Print& dest, uint16_t index);
@@ -93,8 +93,8 @@ class ClassicDigiROM : public BaseTextDigiROM {
 public:
     using BaseTextDigiROM::BaseTextDigiROM;
     void prepare();
-    int16_t send(uint16_t buffer[], uint16_t buffer_size);
-    void receive(uint16_t data[], ReceiveOutcome outcome);
+    int16_t next(uint16_t buffer[], uint16_t buffer_size);
+    void store(uint16_t data[], ReceiveOutcome outcome);
     void printResult(Print& dest);
 private:
     ClassicCore core_;
@@ -105,8 +105,8 @@ class WordsDigiROM : public BaseTextDigiROM {
 public:
     using BaseTextDigiROM::BaseTextDigiROM;
     void prepare();
-    int16_t send(uint16_t buffer[], uint16_t buffer_size);
-    void receive(uint16_t data[], ReceiveOutcome outcome);
+    int16_t next(uint16_t buffer[], uint16_t buffer_size);
+    void store(uint16_t data[], ReceiveOutcome outcome);
     void printResult(Print& dest);
 private:
     WordsCore core_;
