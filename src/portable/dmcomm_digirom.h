@@ -67,8 +67,8 @@ struct WordsResultSegment {
 class WordsCore : public BaseCore {
 public:
     void prepare();
-    void next(uint16_t data[], uint16_t length);
-    void store(uint16_t data[], ReceiveOutcome outcome);
+    void store_sent(uint16_t data[], uint16_t length);
+    void store_received(uint16_t data[], ReceiveOutcome outcome);
     //result?
 protected:
     void printResultSegmentData(Print& dest, uint16_t index);

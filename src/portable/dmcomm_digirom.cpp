@@ -140,11 +140,11 @@ void WordsCore::prepare() {
     length_ = 0;
 }
 
-void WordsCore::next(uint16_t data[], uint16_t length) {
+void WordsCore::store_sent(uint16_t data[], uint16_t length) {
     result_append(kDataSent, data, length);
 }
 
-void WordsCore::store(uint16_t data[], ReceiveOutcome outcome) {
+void WordsCore::store_received(uint16_t data[], ReceiveOutcome outcome) {
     last_outcome_ = outcome;
     if (outcome.status == kStatusReceived) {
         result_append(kDataReceived, data, outcome.result_length);
@@ -279,7 +279,7 @@ int16_t WordsDigiROM::next(uint16_t buffer[], uint16_t buffer_size) {
         int8_t digit = hex2val(*cursor_);
         if (digit == -1) {
             if (digit_count == 0) {
-                core_.next(buffer, length);
+                core_.store_sent(buffer, length);
                 return length;
             } else {
                 return -2;
@@ -303,7 +303,7 @@ int16_t WordsDigiROM::next(uint16_t buffer[], uint16_t buffer_size) {
 }
 
 void WordsDigiROM::store(uint16_t data[], ReceiveOutcome outcome) {
-    core_.store(data, outcome);
+    core_.store_received(data, outcome);
 }
 
 void WordsDigiROM::printResult(Print& dest) {
