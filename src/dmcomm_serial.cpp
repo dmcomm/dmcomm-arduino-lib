@@ -2,6 +2,10 @@
 
 #include "DMComm.h"
 
+#define DMCOMM_INDICATE_NEW 0
+#define DMCOMM_INDICATE_NEW_ERROR 1
+#define DMCOMM_INDICATE_EXECUTED 2
+
 namespace DMComm {
 
 SerialFollower::SerialFollower(Controller& controller, Stream& serial) :
@@ -9,6 +13,11 @@ SerialFollower::SerialFollower(Controller& controller, Stream& serial) :
 
 SerialFollower::~SerialFollower() {
     delete_digirom();
+}
+
+void SerialFollower::setIndicator(Indicator& indicator) {
+    indicator_ = &indicator;
+    indicator_->begin();
 }
 
 void SerialFollower::loop() {
@@ -38,8 +47,10 @@ void SerialFollower::loop() {
         if (rom_type.signal_type == kSignalTypeInfo) {
             serial_.print(DMCOMM_BUILD_INFO);
         } else if (digirom_ != nullptr) {
+            indicate(DMCOMM_INDICATE_NEW);
             serial_.print(F("(new DigiROM)"));
         } else {
+            indicate(DMCOMM_INDICATE_NEW_ERROR);
             serial_.print(F("(paused)"));
         }
         serial_.println();
@@ -49,6 +60,7 @@ void SerialFollower::loop() {
     }
     if (digirom_ != nullptr) {
         controller_.execute(*digirom_);
+        indicate(DMCOMM_INDICATE_EXECUTED);
         digirom_->printResult(serial_);
         serial_.println();
         if(digirom_->turn() == 1) {
@@ -97,6 +109,23 @@ void SerialFollower::delete_digirom() {
     if (digirom_ != nullptr) {
         delete digirom_;
         digirom_ = nullptr;
+    }
+}
+
+void SerialFollower::indicate(uint8_t type) {
+    if (indicator_ == nullptr) {
+        return;
+    }
+    switch(type) {
+    case DMCOMM_INDICATE_NEW:
+        indicator_->new_digirom(digirom_);
+        break;
+    case DMCOMM_INDICATE_NEW_ERROR:
+        indicator_->new_digirom_error();
+        break;
+    case DMCOMM_INDICATE_EXECUTED:
+        indicator_->executed_digirom(digirom_);
+        break;
     }
 }
 

@@ -56,6 +56,15 @@ uint16_t BaseCore::length() {
     return length_;
 }
 
+bool BaseCore::somethingReceived() {
+    for (uint16_t i = 0; i < length_; i ++) {
+        if (result_types_[i] == kDataReceived) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void BaseCore::printResult(Print& dest) {
     for (uint16_t i = 0; i < length_; i ++) {
         ResultSegmentType seg_type = result_types_[i];
@@ -79,6 +88,19 @@ void BaseCore::printResult(Print& dest) {
     default:
         printReceiveOutcome(dest, last_outcome_);
     }
+}
+
+
+uint16_t BaseDigiROM::resultSize() {
+    return base_core_->length();
+}
+
+bool BaseDigiROM::somethingReceived() {
+    return base_core_->somethingReceived();
+}
+
+void BaseDigiROM::printResult(Print& dest) {
+    base_core_->printResult(dest);
 }
 
 
@@ -174,7 +196,7 @@ void WordsCore::result_append(ResultSegmentType type, uint16_t data[], uint16_t 
 }
 
 
-BaseTextDigiROM::BaseTextDigiROM(const char * digirom) {
+void BaseTextDigiROM::loadTextDigiROM(const char * digirom) {
     DigiROMType rom_type = digiROMType(digirom);
     signal_type_ = rom_type.signal_type;
     turn_ = rom_type.turn;
@@ -195,6 +217,11 @@ uint8_t BaseTextDigiROM::turn() {
     return turn_;
 }
 
+
+ClassicDigiROM::ClassicDigiROM(const char * digirom) {
+    loadTextDigiROM(digirom);
+    base_core_ = &core_;
+}
 
 void ClassicDigiROM::prepare() {
     core_.prepare();
@@ -253,10 +280,11 @@ void ClassicDigiROM::store(uint16_t data[], ReceiveOutcome outcome) {
     core_.store(data, outcome);
 }
 
-void ClassicDigiROM::printResult(Print& dest) {
-    core_.printResult(dest);
-}
 
+WordsDigiROM::WordsDigiROM(const char * digirom) {
+    loadTextDigiROM(digirom);
+    base_core_ = &core_;
+}
 
 void WordsDigiROM::prepare() {
     core_.prepare();
@@ -304,10 +332,6 @@ int16_t WordsDigiROM::next(uint16_t buffer[], uint16_t buffer_size) {
 
 void WordsDigiROM::store(uint16_t data[], ReceiveOutcome outcome) {
     core_.store_received(data, outcome);
-}
-
-void WordsDigiROM::printResult(Print& dest) {
-    core_.printResult(dest);
 }
 
 

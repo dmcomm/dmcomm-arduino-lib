@@ -11,6 +11,7 @@
 
 using namespace DMComm;
 
+LED_Indicator led = LED_Indicator(13);
 DComOutput output = DComOutput(A2, A1);
 AnalogProngInput input = AnalogProngInput(A3, 5000, 10);
 ClassicCommunicator classic_comm = ClassicCommunicator(output, input);
@@ -23,6 +24,7 @@ void setup () {
     Serial.begin(9600);
     controller.add(classic_comm);
     controller.add(color_comm);
+    serial_follower.setIndicator(led);
 }
 
 void loop() {

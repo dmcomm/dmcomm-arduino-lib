@@ -38,6 +38,7 @@ void digitalWriteMaybe(uint8_t pin, uint8_t val);
 #include "dmcomm_base_communicator.h"
 #include "dmcomm_classic_communicator.h"
 #include "dmcomm_color_communicator.h"
+#include "dmcomm_led.h"
 #include "dmcomm_controller.h"
 #include "dmcomm_serial.h"
 

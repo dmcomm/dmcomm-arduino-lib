@@ -11,12 +11,14 @@ class SerialFollower {
 public:
     SerialFollower(Controller& controller, Stream& serial);
     ~SerialFollower();
+    void setIndicator(Indicator& indicator);
     void loop();
 private:
     Controller& controller_;
     Stream& serial_;
     char command_buffer_[DMCOMM_TEXT_DIGIROM_SIZE];
     BaseDigiROM * digirom_ = nullptr;
+    Indicator * indicator_ = nullptr;
 
     /**
      * Try to read from serial into command buffer.
@@ -25,6 +27,7 @@ private:
      */
     uint8_t serialRead();
     void delete_digirom();
+    void indicate(uint8_t type);
 };
 
 }  // namespace DMComm

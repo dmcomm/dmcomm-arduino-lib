@@ -20,6 +20,19 @@ void printHex(Print& dest, uint16_t value, uint8_t num_digits);
 
 void printReceiveOutcome(Print& dest, ReceiveOutcome outcome);
 
+class BaseCore {
+public:
+    virtual ~BaseCore() {}
+    uint16_t length();
+    bool somethingReceived();
+    void printResult(Print& dest);
+protected:
+    virtual void printResultSegmentData(Print& dest, uint16_t index) = 0;
+    ResultSegmentType result_types_[DMCOMM_CLASSIC_RESULT_SIZE];  // use the largest one here
+    uint16_t length_ = 0;
+    ReceiveOutcome last_outcome_;
+};
+
 class BaseDigiROM {
 public:
     virtual ~BaseDigiROM() {}
@@ -28,19 +41,11 @@ public:
     virtual void prepare() = 0;
     virtual int16_t next(uint16_t buffer[], uint16_t buffer_size) = 0;
     virtual void store(uint16_t data[], ReceiveOutcome outcome) = 0;
-    virtual void printResult(Print& dest) = 0;
-};
-
-class BaseCore {
-public:
-    virtual ~BaseCore() {}
-    uint16_t length();
+    uint16_t resultSize();
+    bool somethingReceived();
     void printResult(Print& dest);
 protected:
-    virtual void printResultSegmentData(Print& dest, uint16_t index) = 0;
-    ResultSegmentType result_types_[DMCOMM_CLASSIC_RESULT_SIZE];
-    uint16_t length_ = 0;
-    ReceiveOutcome last_outcome_;
+    BaseCore * base_core_ = nullptr;
 };
 
 class ClassicCore : public BaseCore {
@@ -79,10 +84,10 @@ private:
 
 class BaseTextDigiROM : public BaseDigiROM {
 public:
-    BaseTextDigiROM(const char * digirom);
     SignalType signal_type();
     uint8_t turn();
 protected:
+    void loadTextDigiROM(const char * digirom);
     char digirom_[DMCOMM_TEXT_DIGIROM_SIZE];
     SignalType signal_type_;
     uint8_t turn_;
@@ -91,11 +96,10 @@ protected:
 
 class ClassicDigiROM : public BaseTextDigiROM {
 public:
-    using BaseTextDigiROM::BaseTextDigiROM;
+    ClassicDigiROM(const char * digirom);
     void prepare();
     int16_t next(uint16_t buffer[], uint16_t buffer_size);
     void store(uint16_t data[], ReceiveOutcome outcome);
-    void printResult(Print& dest);
 private:
     ClassicCore core_;
     const char * cursor_;
@@ -103,11 +107,10 @@ private:
 
 class WordsDigiROM : public BaseTextDigiROM {
 public:
-    using BaseTextDigiROM::BaseTextDigiROM;
+    WordsDigiROM(const char * digirom);
     void prepare();
     int16_t next(uint16_t buffer[], uint16_t buffer_size);
     void store(uint16_t data[], ReceiveOutcome outcome);
-    void printResult(Print& dest);
 private:
     WordsCore core_;
     const char * cursor_;
