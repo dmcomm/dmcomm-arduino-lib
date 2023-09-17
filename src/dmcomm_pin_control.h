@@ -50,6 +50,19 @@ protected:
     uint8_t active_level_;
 };
 
+class DigitalProngInput : public BaseProngInput {
+public:
+    DigitalProngInput(uint8_t pin_in);
+    ~DigitalProngInput();
+    void begin();
+    void end();
+    bool isActive();
+    void setThreshold(uint16_t threshold_mV);
+    uint16_t voltage();
+private:
+    uint8_t pin_in_;
+};
+
 class AnalogProngInput : public BaseProngInput {
 public:
     AnalogProngInput(uint8_t pin_in, uint16_t reference_voltage_mV, uint8_t read_resolution);

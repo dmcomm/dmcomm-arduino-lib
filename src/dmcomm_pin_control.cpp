@@ -84,6 +84,26 @@ ReceiveOutcome BaseProngInput::waitFrom(bool active, uint32_t dur_min, uint32_t 
     return outcome;
 }
 
+DigitalProngInput::DigitalProngInput(uint8_t pin_in) : pin_in_(pin_in) {
+    setActiveLevel(LOW);
+}
+
+DigitalProngInput::~DigitalProngInput() {
+    end();
+}
+
+void DigitalProngInput::begin() {
+    pinMode(pin_in_, INPUT);
+}
+
+void DigitalProngInput::end() {}
+
+void DigitalProngInput::setThreshold(uint16_t threshold_mV) {}
+
+bool DigitalProngInput::isActive() {
+    return digitalRead(pin_in_) == active_level_;
+}
+
 AnalogProngInput::AnalogProngInput(uint8_t pin_in, uint16_t reference_voltage_mV, uint8_t read_resolution) :
         pin_in_(pin_in), reference_voltage_mV_(reference_voltage_mV), read_resolution_(read_resolution) {
     setActiveLevel(LOW);
