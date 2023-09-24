@@ -36,6 +36,7 @@ void digitalWriteMaybe(uint8_t pin, uint8_t val);
 #include "portable/dmcomm_printonly.h"
 #include "dmcomm_pin_control.h"
 #include "dmcomm_rp2040.h"
+#include "dmcomm_prong_test.h"
 #include "dmcomm_base_communicator.h"
 #include "dmcomm_classic_communicator.h"
 #include "dmcomm_color_communicator.h"

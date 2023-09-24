@@ -20,11 +20,15 @@ void SerialFollower::setIndicator(Indicator& indicator) {
     indicator_->begin();
 }
 
+void SerialFollower::setProngTester(ProngTester& prong_tester) {
+    prong_tester_ = &prong_tester;
+}
+
 void SerialFollower::loop() {
     uint8_t i = serialRead();
     if (i > 0) {
         DigiROMType rom_type = digiROMType(command_buffer_);
-        if (rom_type.signal_type != kSignalTypeInfo) {
+        if (rom_type.signal_type != kSignalTypeInfo && rom_type.signal_type != kSignalTypeProngTest) {
             serial_.print(F("got "));
             serial_.print(i, DEC);
             serial_.print(F(" bytes: "));
@@ -46,6 +50,12 @@ void SerialFollower::loop() {
         }
         if (rom_type.signal_type == kSignalTypeInfo) {
             serial_.print(DMCOMM_BUILD_INFO);
+        } else if (rom_type.signal_type == kSignalTypeProngTest) {
+            serial_.println(F("[info]"));
+            serial_.println(DMCOMM_BUILD_INFO);
+            if (prong_tester_ != nullptr) {
+                prong_tester_->run(serial_);
+            }
         } else if (digirom_ != nullptr) {
             indicate(DMCOMM_INDICATE_NEW);
             serial_.print(F("(new DigiROM)"));

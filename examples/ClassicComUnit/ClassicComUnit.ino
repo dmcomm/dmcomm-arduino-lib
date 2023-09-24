@@ -16,10 +16,13 @@ using namespace DMComm;
 LED_Indicator led = LED_Indicator(25);
 PComOutput output = PComOutput(19, 20, 21);
 DigitalProngInput input = DigitalProngInput(22);
+AnalogProngInput analog_test_input = AnalogProngInput(26, 3300, 10);
+ProngTester prong_tester = ProngTester(output, input, analog_test_input);
 #else
 LED_Indicator led = LED_Indicator(13);
 DComOutput output = DComOutput(A2, A1);
 AnalogProngInput input = AnalogProngInput(A3, 5000, 10);
+ProngTester prong_tester = ProngTester(output, input, input);
 #endif
 
 ClassicCommunicator classic_comm = ClassicCommunicator(output, input);
@@ -32,6 +35,7 @@ void setup () {
     controller.add(classic_comm);
     controller.add(color_comm);
     serial_follower.setIndicator(led);
+    serial_follower.setProngTester(prong_tester);
 }
 
 void loop() {

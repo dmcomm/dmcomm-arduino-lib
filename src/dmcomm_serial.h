@@ -12,6 +12,7 @@ public:
     SerialFollower(Controller& controller, Stream& serial);
     ~SerialFollower();
     void setIndicator(Indicator& indicator);
+    void setProngTester(ProngTester& prong_tester);
     void loop();
 private:
     Controller& controller_;
@@ -19,6 +20,7 @@ private:
     char command_buffer_[DMCOMM_TEXT_DIGIROM_SIZE];
     BaseDigiROM * digirom_ = nullptr;
     Indicator * indicator_ = nullptr;
+    ProngTester * prong_tester_ = nullptr;
 
     /**
      * Try to read from serial into command buffer.

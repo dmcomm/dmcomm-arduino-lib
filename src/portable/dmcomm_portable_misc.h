@@ -11,7 +11,7 @@ namespace DMComm {
  * The signal type for communicating with the toy.
  * V for 2-prong, X for 3-prong, Y for Xros Mini.
  */
-enum SignalType {kSignalTypeV = 0, kSignalTypeX = 1, kSignalTypeY = 2, kSignalTypeC, kSignalTypeInfo, kSignalTypeError};
+enum SignalType {kSignalTypeV = 0, kSignalTypeX = 1, kSignalTypeY = 2, kSignalTypeC, kSignalTypeInfo, kSignalTypeProngTest, kSignalTypeError};
 
 enum ResultSegmentType {kDataSent, kDataReceived, kNoData};
 
