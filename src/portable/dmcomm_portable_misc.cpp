@@ -6,8 +6,11 @@ namespace DMComm {
 
 DigiROMType digiROMType(const char * digirom) {
     uint8_t chunk_len = 0;
-    while (digirom[chunk_len] != '\0' && digirom[chunk_len] != '-' && chunk_len < 4) {
-        chunk_len ++;
+    while (digirom[chunk_len] != '\0'
+        && digirom[chunk_len] != '-'
+        && digirom[chunk_len] != ' '
+        && chunk_len < 4) {
+            chunk_len ++;
     }
     char op1 = '_';
     char op2 = '_';
