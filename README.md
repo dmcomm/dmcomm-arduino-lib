@@ -2,7 +2,14 @@
 
 Arduino program and library to communicate with Digimon toys, by BladeSabre ( bladethecoder@gmail.com ). License: MIT.
 
-Currently supports A-Com and D-Com; the 3 classic prong styles with all calculation features; and Digimon Color without calculation. LED feedback and the voltage test are not yet supported.
+Currently supports:
+* A-Com and D-Com (portable)
+* P-Com (on RP2040)
+* The 3 classic prong styles with all calculation features
+* Digimon Color without calculation
+* LED feedback
+* Voltage test (t)
+* Version info (i)
 
 Loosely based on `dmcomm-python`, but avoiding dynamic allocation (except in SerialFollower).
 
