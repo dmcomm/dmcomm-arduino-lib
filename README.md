@@ -2,7 +2,10 @@
 
 Arduino program and library to communicate with Digimon toys, by BladeSabre ( bladethecoder@gmail.com ). License: MIT.
 
-Currently supports:
+To install, check your board type below, and **pick one** from A-Com Flasher / Alpha Upload / "Install from Source".
+
+## Currently supports
+
 * A-Com and D-Com (portable)
 * P-Com (on RP2040)
 * The 3 classic prong styles with all calculation features
@@ -10,8 +13,6 @@ Currently supports:
 * LED feedback
 * Voltage test (t)
 * Version info (i)
-
-Loosely based on `dmcomm-python`, but avoiding dynamic allocation (except in SerialFollower).
 
 ## Board Types
 
@@ -59,3 +60,5 @@ Loosely based on `dmcomm-python`, but avoiding dynamic allocation (except in Ser
 ## Other DMComm versions
 * For the original version which is not a library, see https://github.com/dmcomm/dmcomm-project
 * For the CircuitPython version for RP2040, see https://github.com/dmcomm/dmcomm-python
+
+This software is loosely based on `dmcomm-python`, but avoiding dynamic allocation (except in SerialFollower).
